@@ -8,38 +8,24 @@ def buy_estate(row):
 
     return buy_estate
 
-def summer_price_sell(row):
-    if row.price_buy > row.summer_median:
-        price_sell = row.price_buy +(row.price_buy *0.1)
+
+def price_sale(row):
+    if row.price_buy >= row.price_median:
+        sale_price = row.price_buy * 1.1
     else:
-        price_sell = row.price_buy +(row.price_buy *0.3)
+        sale_price = row.price_buy * 1.3
 
-    return price_sell
+    return sale_price
 
-def autumn_price_sell(row):
-    if row.price_buy > row.autumn_median:
-        price_sell = row.price_buy + (row.price_buy *0.1)
+
+def percentual_sale(row):
+    if row.price_buy >= row.price_median:
+        percentual = '10%'
+
     else:
-        price_sell = row.price_buy + (row.price_buy *0.3)
+        percentual = '30%'
 
-    return price_sell
-
-def winter_price_sell(row):
-    if row.price_buy > row.winter_median:
-        price_sell = row.price_buy +(row.price_buy *0.1)
-    else:
-        price_sell = row.price_buy +(row.price_buy *0.3)
-
-    return price_sell
-
-def spring_price_sell(row):
-    if row.price_buy > row.spring_median:
-        price_sell = row.price_buy + (row.price_buy *0.1)
-    else:
-        price_sell = row.price_buy + (row.price_buy *0.3)
-
-    return price_sell
-
+    return percentual
 
 ##### HIPOTESES DE NEGOCIO ####
 

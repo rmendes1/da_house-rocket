@@ -69,33 +69,15 @@ def buy_estates(data):
 
     data_pivot['season_name'] = data_pivot['season'].map(seasons)
 
-    data_season_median = data_pivot[['price_buy', 'season_name']].groupby('season_name').median().reset_index() #MEDIANA POR ESTAÇÃO DO ANO
+    season_pivot = data_pivot[['price_buy', 'season_name', 'zipcode']].groupby(['season_name', 'zipcode']).median().reset_index()
+    data_seasons = pd.merge(data_pivot, season_pivot, on=['zipcode', 'season_name'], how='inner')
+    data_seasons.rename(columns={"price_buy_x": "price_buy", "price_buy_y": "price_median"}, inplace=True)
+    data_seasons = data_seasons[['id', 'zipcode', 'season_name', 'price_buy', 'price_median']]
 
-    data_seasons = data_pivot[['id', 'price_buy', 'date', 'condition', 'zipcode', 'waterfront', 'season_name']].copy()
+    data_seasons['sale_price'] = data_seasons.apply(Functions.price_sale, axis=1)
+    data_seasons['percentual'] = data_seasons.apply(Functions.percentual_sale, axis=1)
 
-    #df4 = pd.merge(df3,df3_season, on='season_name', how='inner')  #COLOCANDO O DF DA MEDIANA DAS ESTAÇÕES NO DF ORIGINAL
-    #df4.rename(columns = {'price_buy_x': 'price_buy', 'price_buy_y': 'season_median'}, inplace = True)
-
-    data_seasons['autumn_median'] = data_season_median.loc[0, 'price_buy']
-    data_seasons['spring_median'] = data_season_median.loc[1, 'price_buy']
-    data_seasons['summer_median'] = data_season_median.loc[2, 'price_buy']
-    data_seasons['winter_median'] = data_season_median.loc[3, 'price_buy']
-
-    #df4.drop('season_median', axis='columns', inplace = True)
-
-#SUMMER
-    data_seasons['summer_price_sell'] = data_seasons.apply(Functions.summer_price_sell, axis=1)
-
-#AUTUMN
-    data_seasons['autumn_price_sell'] = data_seasons.apply(Functions.autumn_price_sell, axis=1)
-
-#WINTER
-    data_seasons['winter_price_sell'] = data_seasons.apply(Functions.winter_price_sell, axis=1)
-
-#SPRING
-    data_seasons['spring_price_sell'] = data_seasons.apply(Functions.spring_price_sell, axis=1)
-
-    st.write(data_seasons.head())
+    st.write(data_seasons)
 
     return None
 
