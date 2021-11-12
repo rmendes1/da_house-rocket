@@ -51,6 +51,7 @@ def buy_estates(data):
 
 #----SET SEASONS ON DATAFRAME----#
     st.header('2. What is/are the best season(s) to buy a estate?')
+    st.subheader('Prices according to season period')
 
 
     data_pivot = buy_estate_result[buy_estate_result['buy_estate'] == 'yes'].copy()
