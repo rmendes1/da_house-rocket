@@ -47,28 +47,31 @@ def buy_estates(data):
 
     c1.dataframe(buy_estate_result.head(15))
 
-    c2.header('Quantity of estates to buy:')
+    c2.header('Quantity of estates to buy')
 
     fig = px.histogram(
         data_frame=buy_estate_result,
         x="buy_estate",
         y="id",
         histfunc="count",
-        title = 'Number of houses to buy',
+        #title = 'Number of houses to buy',
 
         )
-    fig.update_layout(font_family = "Courier New",
-                      font_color = "blue",
+    fig.update_layout(font_family = "Times New Roman",
+                      #font_color = "black",
                       title_font_family = "Times New Roman",
                       legend_title_font_color = "black")
 
-    fig.update_xaxes(title_font_family = "Arial")
+    #fig.update_xaxes(title_font_family = "Arial")
 
     c2.plotly_chart(fig, use_container_width=True)  #creates a minor plot with a description of how many estates HR should buy
 
 #----SET SEASONS ON DATAFRAME----#
     st.header('2. What is/are the best season(s) to buy a estate?')
-    st.subheader('Prices according to season period')
+    c1, c2 = st.beta_columns(2)
+    c1.subheader('Profit according to region')
+    c2.subheader('Sale price according to region')
+
 
 
     data_pivot = buy_estate_result[buy_estate_result['buy_estate'] == 'yes'].copy()  #collecting only the dataframe estates that House Rocket will probably buy. that will help to create a final dataframe
@@ -87,9 +90,9 @@ def buy_estates(data):
     data_pivot['season_name'] = data_pivot['season'].map(seasons)
 
     season_pivot = data_pivot[['price_buy', 'season_name', 'zipcode']].groupby(['season_name', 'zipcode']).median().reset_index()
-    data_seasons = pd.merge(data_pivot, season_pivot, on=['zipcode', 'season_name'], how='inner')         #merges the dataframe we used to help us gettting the info we wanted
+    data_seasons = pd.merge(data_pivot, season_pivot, on=['zipcode', 'season_name'], how='inner')        #merges the dataframe we used to help us gettting the info we wanted
     data_seasons.rename(columns={"price_buy_x": "price_buy", "price_buy_y": "season_median"}, inplace=True)
-    data_seasons = data_seasons[['id', 'zipcode', 'season_name', 'price_buy', 'season_median']]
+    data_seasons = data_seasons[['id', 'zipcode', 'season_name', 'price_buy', 'season_median']].sort_values('zipcode', ascending=True)
 
     data_seasons['sale_price'] = data_seasons.apply(Functions.price_sale, axis=1)
     data_seasons['percentual'] = data_seasons.apply(Functions.percentual_sale, axis=1)
@@ -100,9 +103,19 @@ def buy_estates(data):
                        y="id",
                        color="percentual",
                        barmode="stack",
-                       histfunc = "count"
+                       histfunc = "count",
+                       labels = {
+                         "percentual": "Percentual Profit", "zipcode": "Zipcode"
+                       }
                        )
     c1.plotly_chart(fig2, use_container_width=True)
+
+    mean_price_sell_by_zipcode = data_seasons[['zipcode', 'sale_price']].groupby('zipcode').mean().reset_index()
+    fig3 = px.line(mean_price_sell_by_zipcode,
+                   x = "zipcode",
+                   y = "sale_price",
+                   )
+    c2.plotly_chart(fig3, use_container_width=True)
 
     return None
 
