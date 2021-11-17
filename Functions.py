@@ -10,7 +10,7 @@ def buy_estate(row):
 
 
 def price_sale(row):
-    if row.price_buy >= row.price_median:
+    if row.price_buy >= row.season_median:
         sale_price = row.price_buy * 1.1
     else:
         sale_price = row.price_buy * 1.3
@@ -19,7 +19,7 @@ def price_sale(row):
 
 
 def percentual_sale(row):
-    if row.price_buy >= row.price_median:
+    if row.price_buy >= row.season_median:
         percentual = '10%'
 
     else:
