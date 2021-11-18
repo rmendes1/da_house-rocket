@@ -8,12 +8,13 @@ Created on Nov 10th, 2021.
 
 ###---IMPORTS---###
 import pandas as pd   #to handle csv files and DataFrame structures
-#import numpy as np
-#import folium         #to handle the map with price density
-import plotly.express as px
-import matplotlib.pyplot as plt   #to plot graphic results of the metrics
-import seaborn as sns     #to plot graphic results of the metrics given
-#from matplotlib import gridspec  #helps to create multiple plots
+import numpy as np
+import folium         #to handle the map with price density
+from streamlit_folium import folium_static
+from folium.plugins import MarkerCluster
+import geopandas
+import plotly.express as px #to plot graphic results of the metrics
+#import seaborn as sns     #to plot graphic results of the metrics given
 import streamlit as st  #to create the dashboard page
 import Functions  #functions created to modularize the code
 pd.set_option('display.float_format', lambda x: '%.2f' % x)  #limits the quantity of float numbers (decimal)
@@ -24,17 +25,141 @@ def get_data(path):
     data = pd.read_csv(path) #loads the archive
     return data
 
+def get_geofile(path): #change to url
+   geofile = geopandas.read_file(path)
+   return geofile
 
+def data_overview(data):
+    st.title('House Rocket Exploratory Data Analysis')
+    st.header('Dataset Overview')
+    f_attributes = st.sidebar.multiselect('Enter columns', data.columns)
+    f_zipcode = st.sidebar.multiselect('Enter zipcode', sorted(set(data['zipcode'].unique())))
+    st.title('Data Overview')
+    # attributes + zipcode = Selecionar colunas e linhas
+    # atributes = selecionar colunas
+    # zipcode = selecionar linhas
+    # 0 + 0 = retorno o dataset original
+
+    if (f_zipcode != []) & (f_attributes != []):
+        data = data.loc[data['zipcode'].isin(f_zipcode), f_attributes]
+
+    elif (f_zipcode != []) & (f_attributes == []):
+        data = data.loc[data['zipcode'].isin(f_zipcode), :]
+
+    elif (f_zipcode == []) & (f_attributes != []):
+        data = data.loc[:, f_attributes]
+
+    else:
+        data = data.copy()
+
+    st.dataframe(data)
+
+    return None
+
+def average_metrics(data):
+
+    c1, c2 = st.columns((1, 1))
+
+    # Average metrics
+    df1 = data[['id', 'zipcode']].groupby('zipcode').count().reset_index()
+    df2 = data[['price', 'zipcode']].groupby('zipcode').mean().reset_index()
+    df3 = data[['sqft_living', 'zipcode']].groupby('zipcode').count().reset_index()
+    df4 = data[['price_m2', 'zipcode']].groupby('zipcode').mean().reset_index()
+
+    # merge
+    m1 = pd.merge(df1, df2, on='zipcode', how='inner')
+    m2 = pd.merge(m1, df3, on='zipcode', how='inner')
+    df = pd.merge(m2, df4, on='zipcode', how='inner')
+
+    # st.write(df.head())
+
+    df.columns = ['ZIPCODE', 'TOTAL HOUSES', 'PRICE', 'SQFT LIVING', 'PRICE/M2']
+
+    c1.header('Average Values')
+    c1.dataframe(df, height=600)
+
+    # Descriptive Statistics 01
+    num_attributes = data.select_dtypes(include=['int64', 'float64'])
+
+    media = pd.DataFrame(num_attributes.apply(np.mean))
+    mediana = pd.DataFrame(num_attributes.apply(np.median))
+    std = pd.DataFrame(num_attributes.apply(np.std))
+    max_ = pd.DataFrame(num_attributes.apply(np.max))
+    min_ = pd.DataFrame(num_attributes.apply(np.min))
+
+    df1 = pd.concat([max_, min_, media, mediana, std], axis=1).reset_index()
+
+    df1.columns = ['attributes', 'max', 'min', 'mean', 'median', 'std']
+
+    c2.header('Descriptive Analysis')
+    c2.dataframe(df1, height=600)
+
+    return None
+
+def portfolio_density(data, geofile):
+    st.title('Region Overview')
+    c1, c2 = st.columns((1, 1))
+    c1.header('Portfolio Density')
+
+    df = data.sample(10)
+
+    # -----------
+    # MAP CONSTRUCTION - folium
+    # --------------
+
+    density_map = folium.Map(location=[data['lat'].mean(), data['long'].mean()],
+                             default_zoom_start=15)
+
+    # st.write(density_map)
+    marker_cluster = MarkerCluster().add_to(density_map)
+
+    for name, row in df.iterrows():
+        folium.Marker(([row['lat'], row['long']]),
+                      popup='Price {0}, Sold on: {1}, with sqft: {2} m2'.format(row['price'],
+                                                                                row['date'],
+                                                                                row['sqft_living'])).add_to(
+            marker_cluster)
+
+    with c1:
+        folium_static(density_map)
+
+    # -------
+    # Region Price Map
+    # -------
+
+    c2.header("Price Density")
+
+    df = data[['price', 'zipcode']].groupby('zipcode').mean().reset_index()
+
+    df.columns = ['ZIP', 'PRICE']
+    df.sample(10)
+    geofile = geofile[geofile['ZIP'].isin(df['ZIP'].tolist())]
+
+    region_price_map = folium.Map(location=[data['lat'].mean(), data['long'].mean()],
+                                  default_zoom_start=15)
+
+    region_price_map.choropleth(data=df,
+                                geo_data=geofile,
+                                columns=['ZIP', 'PRICE'],
+                                key_on='feature.properties.ZIP',
+                                fill_color='YlOrRd',
+                                fill_opacity=0.7,
+                                line_opacity=0.2,
+                                legend_name='AVG PRICE')
+
+    with c2:
+        folium_static(region_price_map)
+
+    return None
 ### What are the estates that House Rocket should buy and for how much? ###
 ### COLOCAR MAPA DE DENSIDADE EM CIMA OU EMBAIXO
 def buy_estates(data):
 
-    st.title('House Rocket Exploratory Data Analysis')
     st.header('1. How many estates should House Rocket buy?')
     c1, c2 = st.beta_columns(2)
 
     #st.header('1. What are the estates that House Rocket should buy and for how much?')
-    c1.header('Dataset overview')
+    #c1.header('Dataset overview')
     data['zipcode'] = data['zipcode'].astype(str) # Transforms "ZIPCODE" feature data type from INT - STRING
     df = data[['id', 'date', 'price', 'condition', 'zipcode', 'waterfront']].copy()
     df_group_median = df[['price', 'zipcode']].groupby('zipcode').median().reset_index()  # calculating the average price per region
@@ -45,9 +170,9 @@ def buy_estates(data):
 
     buy_estate_result['buy_estate']=buy_estate_result.apply(Functions.buy_estate, axis = 1) #for more details, check Functions archive
 
-    c1.dataframe(buy_estate_result.head(15))
+    #c1.dataframe(buy_estate_result.head(15))
 
-    c2.header('Quantity of estates to buy')
+    c1.header('Quantity of estates to buy')
 
     fig = px.histogram(
         data_frame=buy_estate_result,
@@ -64,13 +189,17 @@ def buy_estates(data):
 
     #fig.update_xaxes(title_font_family = "Arial")
 
-    c2.plotly_chart(fig, use_container_width=True)  #creates a minor plot with a description of how many estates HR should buy
+    c1.plotly_chart(fig, use_container_width=True)  #creates a minor plot with a description of how many estates HR should buy
+
+    return None
 
 #----SET SEASONS ON DATAFRAME----#
+
+def estates_season(data):
     st.header('2. What is/are the best season(s) to buy a estate?')
     c1, c2 = st.beta_columns(2)
-    c1.subheader('Profit according to region')
-    c2.subheader('Sale price according to region')
+    c1.subheader('Estates per region x Sales Percentual')
+    c2.subheader('Mean price sell per region')
 
 
 
@@ -123,7 +252,13 @@ if __name__ == '__main__':
     # ETL
     # ---- Data Extraction
     path = 'kc_house_data.csv'
+    url = 'Zip_Codes.geojson'
     data = get_data(path)
+    geofile = get_geofile(url)
 
     # ---- Transformation
+    data_overview(data)
+    average_metrics(data)
+    portfolio_density(data, geofile)
     buy_estates(data)
+    estates_season(data)

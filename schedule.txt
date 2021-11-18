@@ -1,0 +1,7 @@
+Modifications for the next day:
+
+Try to put the season indication on plots somehow. The season needs to be
+shown. The groupby you did previously had had the indications of season, but
+in the actual plot that is not portrayed.
+
+End this stage of development and head to business questions implementation.
