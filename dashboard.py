@@ -74,28 +74,31 @@ def buy_estates(data):
     buy_estate_result.sort_values('zipcode')    #organizes the dataframe by zipcode order
 
     buy_estate_result['buy_estate']=buy_estate_result.apply(Functions.buy_estate, axis = 1) #for more details, check Functions archive
-
+    buy_estate_result.sort_values('condition', inplace = True)
     #c1.dataframe(buy_estate_result.head(15))
 
-    c1.header('Quantity of estates to buy')
-
+    #c1.header('Quantity of estates to buy')
+    st.header('Quantity of estates to buy')
     fig = px.histogram(
         data_frame=buy_estate_result,
         x="buy_estate",
         y="id",
+        color = "condition",
         histfunc="count",
-        #title = 'Number of houses to buy',
+        barmode = "group"
+
+        #title = 'Number of houses to buy'
 
         )
     fig.update_layout(font_family = "Times New Roman",
                       #font_color = "black",
                       title_font_family = "Times New Roman",
-                      legend_title_font_color = "black")
+                      legend_title_font_color = "black"
+                      )
 
     #fig.update_xaxes(title_font_family = "Arial")
 
-    c1.plotly_chart(fig, use_container_width=True)  #creates a minor plot with a description of how many estates HR should buy
-
+    st.plotly_chart(fig, use_container_width=True)  #creates a minor plot with a description of how many estates HR should buy
 
 #----SET SEASONS ON DATAFRAME----#
     st.header('2. What is/are the best season(s) to buy a estate?')
@@ -150,6 +153,31 @@ def buy_estates(data):
 
     return None
 
+def business_hypo(data):
+    st.title('Business hypothesis')
+    st.header('A. More de 10% of Estates with waterfront are cheaper than average')
+    data['zipcode'] = data['zipcode'].astype(str)
+    c1, c2 = st.beta_columns(2)
+    data_new = Functions.create_price_mean_col(data)  #Merges column price_mean on the current dataset
+
+    data_new['percentual'] = data_new.apply(Functions.percentual_growth, axis=1)
+    data_new['bigger_smaller'] = data_new.apply(Functions.bigger_smaller_than_avg, axis=1)
+
+    #wf_0 = data_new[data_new['waterfront'] == 1]
+    #wf = wf_0[['waterfront', 'bigger_smaller']]
+
+    #total_waterfront = wf.groupby('bigger_smaller').count().reset_index()
+   # total_estate = data_new[['id', 'bigger_smaller']].groupby('bigger_smaller').count().reset_index()
+
+    fig1 = px.histogram(data_new,
+                        x = "bigger_smaller",
+                        y = "id",
+                        histfunc="count"
+                        )
+
+    c1.plotly_chart(fig1, use_container_width=True)
+
+    return None
 if __name__ == '__main__':
     # ETL
     # ---- Data Extraction
@@ -161,3 +189,4 @@ if __name__ == '__main__':
     # ---- Transformation
     data_overview(data)
     buy_estates(data)
+    business_hypo(data)
