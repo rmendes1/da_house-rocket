@@ -34,10 +34,10 @@ def data_overview(data):
     f_attributes = st.sidebar.multiselect('Enter columns', data.columns)
     f_zipcode = st.sidebar.multiselect('Enter zipcode', sorted(set(data['zipcode'].unique())))
     st.title('Data Overview')
-    # attributes + zipcode = Selecionar colunas e linhas
-    # atributes = selecionar colunas
-    # zipcode = selecionar linhas
-    # 0 + 0 = retorno o dataset original
+    # attributes + zipcode = Select columns and rows
+    # atributes = select colunmns
+    # zipcode = select lines
+    # 0 + 0 = returns original dataset
 
     if (f_zipcode != []) & (f_attributes != []):
         data = data.loc[data['zipcode'].isin(f_zipcode), f_attributes]
@@ -85,16 +85,17 @@ def buy_estates(data):
         y="id",
         color = "condition",
         histfunc="count",
-        barmode = "group"
-
+        barmode = "group", color_continuous_scale=px.colors.sequential.Viridis
         #title = 'Number of houses to buy'
 
         )
-    fig.update_layout(font_family = "Times New Roman",
+    #fig.update_layout(font_family = "Times New Roman",
                       #font_color = "black",
-                      title_font_family = "Times New Roman",
-                      legend_title_font_color = "black"
-                      )
+    #                  title_font_family = "Times New Roman",
+     #                 legend_title_font_color = "black"
+      #
+       #               )
+
 
     #fig.update_xaxes(title_font_family = "Arial")
 
@@ -142,6 +143,7 @@ def buy_estates(data):
                          "percentual": "Percentual Profit", "zipcode": "Zipcode"
                        }
                        )
+
     c1.plotly_chart(fig2, use_container_width=True)
 
     mean_price_sell_by_zipcode = data_seasons[['zipcode', 'sale_price']].groupby('zipcode').mean().reset_index()
@@ -155,27 +157,47 @@ def buy_estates(data):
 
 def business_hypo(data):
     st.title('Business hypothesis')
-    st.header('A. More de 10% of Estates with waterfront are cheaper than average')
+    st.header('A. More than 10% of Estates with waterfront are cheaper than average')
     data['zipcode'] = data['zipcode'].astype(str)
     c1, c2 = st.beta_columns(2)
+    c1.subheader('Estates with waterfront vs Price Avg')
+    c2.subheader('Estates per region vs Price Avg')
     data_new = Functions.create_price_mean_col(data)  #Merges column price_mean on the current dataset
 
     data_new['percentual'] = data_new.apply(Functions.percentual_growth, axis=1)
     data_new['bigger_smaller'] = data_new.apply(Functions.bigger_smaller_than_avg, axis=1)
+    data_new.sort_values('zipcode', inplace=True) #organizing dataframe by region order so that the plot is organized
 
-    #wf_0 = data_new[data_new['waterfront'] == 1]
-    #wf = wf_0[['waterfront', 'bigger_smaller']]
+    wf = data_new[data_new['waterfront'] == 1]
+    wf = wf[['waterfront', 'bigger_smaller', 'zipcode']]
 
-    #total_waterfront = wf.groupby('bigger_smaller').count().reset_index()
-   # total_estate = data_new[['id', 'bigger_smaller']].groupby('bigger_smaller').count().reset_index()
+    #total_waterfront = wf.groupby(['zipcode','bigger_smaller']).count().reset_index()                    #IT TURNS OUT THAT IT WAS NOT LONGER NEEDED
+    #total_estate = data_new[['id', 'bigger_smaller']].groupby('bigger_smaller').count().reset_index()
 
-    fig1 = px.histogram(data_new,
-                        x = "bigger_smaller",
-                        y = "id",
-                        histfunc="count"
-                        )
+    ##### FIRST PLOT: Estates vs Price Avg
+   # fig1 = px.pie(total_estate, values='id', names='bigger_smaller')
+   # fig1.update_traces(textposition='inside')
+    #fig1.update_layout(uniformtext_minsize=12, uniformtext_mode='hide')
+    #c1.plotly_chart(fig1, use_container_width=True)
 
+    ##### SECOND PLOT: Estates with waterfront vs Price Avg
+    fig1 = px.pie(wf, values='waterfront', names='bigger_smaller')
+    fig1.update_traces(textposition='inside', textfont_size=15)
+    #fig1.update_layout(uniformtext_minsize=14, uniformtext_mode='hide')
     c1.plotly_chart(fig1, use_container_width=True)
+
+    ##### THIRD PLOT: Estates per region vs Price Avg
+    fig2 = px.histogram(wf,
+                       x="zipcode",
+                       y="waterfront",
+                       color="bigger_smaller",
+                       histfunc="count",
+                       barmode="stack",
+                        labels={
+                            "bigger_smaller": "Bigger/Smaller than Avg", "zipcode": "Zipcode"
+                        }
+                       )
+    c2.plotly_chart(fig2, use_container_width=True)
 
     return None
 if __name__ == '__main__':
