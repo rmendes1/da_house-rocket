@@ -261,13 +261,8 @@ def business_hypo_1(data):
     return None
 
 def business_hypo_2(data):
-    st.header('A. More than 10% of Estates with waterfront are cheaper than average')
+    st.header('B. More than 60% of Estates with year built before 1955 are cheaper than average')
     data['zipcode'] = data['zipcode'].astype(str)
-    c1, c2 = st.beta_columns(2)
-
-    c1.subheader('Price Avg of Estates with Year Built < 1955')
-    c2.subheader('Estates per region vs Price Avg')
-
     data_new = Functions.create_price_mean_col(data)  # Merges column price_mean on the current dataset
 
     data_new['percentual'] = data_new.apply(Functions.percentual_growth, axis=1)
@@ -275,15 +270,37 @@ def business_hypo_2(data):
     data_new.sort_values('zipcode', inplace=True)  # organizing dataframe by region order so that the plot is organized
 
     df_yrbuilt = data_new[data_new['yr_built'] < 1955].copy()
+    df_yrbuilt = df_yrbuilt[['id', 'yr_built', 'zipcode', 'condition', 'bigger_smaller']].copy()
     df_yrbuilt.sort_values('zipcode', inplace=True)
 
     total_df_yrbuilt = df_yrbuilt[['id', 'bigger_smaller', 'zipcode']].groupby(['zipcode', 'bigger_smaller']).count().reset_index()
 
-    fig1 = px.pie(total_df_yrbuilt, values= 'id', names='bigger_smaller', color_discrete_sequence = px.colors.cyclical.Edge)
-    fig1.update_traces(textposition='inside', textfont_size=15)
-    c1.plotly_chart(fig1, use_container_width=True)
+    st.subheader('Condition of Estates with Year Built < 1955')
+    fig1 = px.histogram(df_yrbuilt,
+                        x='bigger_smaller',
+                        y='id',
+                        color='condition',
+                        histfunc='count',
+                        barmode='group',
+                        color_discrete_sequence=px.colors.cyclical.Edge
+                        )
 
-    fig2 = px.histogram(df_yrbuilt,
+    st.plotly_chart(fig1, use_container_width=True)
+
+    c1, c2 = st.beta_columns(2)
+
+    c1.subheader('Price Avg of Estates with Year Built < 1955')
+    c2.subheader('Estates per region vs Price Avg')
+
+
+
+
+
+    fig2 = px.pie(total_df_yrbuilt, values= 'id', names='bigger_smaller', color_discrete_sequence = px.colors.cyclical.Edge)
+    fig2.update_traces(textposition='inside', textfont_size=15)
+    c1.plotly_chart(fig2, use_container_width=True)
+
+    fig3 = px.histogram(df_yrbuilt,
                         y='id',
                         x='zipcode',
                         color='bigger_smaller',
@@ -294,6 +311,8 @@ def business_hypo_2(data):
                             "bigger_smaller": "Bigger/Smaller than Avg", "zipcode": "Zipcode"
                         }
                         )
+
+    c2.plotly_chart(fig3, use_container_width=True)
 
     return None
 
@@ -307,7 +326,7 @@ if __name__ == '__main__':
 
     # ---- Transformation
     data_overview(data)
-    portfolio_density(data,geofile)
+    #portfolio_density(data,geofile)
     buy_estates(data)
     business_hypo_1(data)
     business_hypo_2(data)
