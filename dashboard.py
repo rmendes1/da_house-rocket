@@ -295,6 +295,8 @@ def business_hypo_2(data):
                         }
                         )
 
+    return None
+
 if __name__ == '__main__':
     # ETL
     # ---- Data Extraction
@@ -308,3 +310,4 @@ if __name__ == '__main__':
     portfolio_density(data,geofile)
     buy_estates(data)
     business_hypo_1(data)
+    business_hypo_2(data)
