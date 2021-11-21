@@ -55,6 +55,61 @@ def data_overview(data):
 
     return None
 
+def portfolio_density(data, geofile):
+    st.title('Region Overview')
+    c1, c2 = st.beta_columns(2)
+    c1.header('Portfolio Density')
+
+    df = data.sample(10)
+
+    # -----------
+    # MAP CONSTRUCTION - folium
+    # --------------
+
+    density_map = folium.Map(location=[data['lat'].mean(), data['long'].mean()],
+                             default_zoom_start=15)
+
+    # st.write(density_map)
+    marker_cluster = MarkerCluster().add_to(density_map)
+
+    for name, row in df.iterrows():
+        folium.Marker(([row['lat'], row['long']]),
+                      popup='Price {0}, Sold on: {1}, with sqft: {2} m2'.format(row['price'],
+                                                                                row['date'],
+                                                                                row['sqft_living'])).add_to(marker_cluster)
+
+    with c1:
+        folium_static(density_map)
+
+    # -------
+    # Region Price Map
+    # -------
+
+    c2.header("Price Density")
+
+    df = data[['price', 'zipcode']].groupby('zipcode').mean().reset_index()
+
+    df.columns = ['ZIP', 'PRICE']
+    df.sample(10)
+    geofile = geofile[geofile['ZIP'].isin(df['ZIP'].tolist())]
+
+    region_price_map = folium.Map(location=[data['lat'].mean(), data['long'].mean()],
+                                  default_zoom_start=15)
+
+    region_price_map.choropleth(data=df,
+                                geo_data=geofile,
+                                columns=['ZIP', 'PRICE'],
+                                key_on='feature.properties.ZIP',
+                                fill_color='YlOrRd',
+                                fill_opacity=0.7,
+                                line_opacity=0.2,
+                                legend_name='AVG PRICE')
+
+    with c2:
+        folium_static(region_price_map)
+
+    return None
+
 
 ### What are the estates that House Rocket should buy and for how much? ###
 ### COLOCAR MAPA DE DENSIDADE EM CIMA OU EMBAIXO
@@ -85,7 +140,8 @@ def buy_estates(data):
         y="id",
         color = "condition",
         histfunc="count",
-        barmode = "group", color_continuous_scale=px.colors.sequential.Viridis
+        barmode = "group",
+        color_discrete_sequence = px.colors.sequential.Viridis
         #title = 'Number of houses to buy'
 
         )
@@ -141,7 +197,8 @@ def buy_estates(data):
                        histfunc = "count",
                        labels = {
                          "percentual": "Percentual Profit", "zipcode": "Zipcode"
-                       }
+                       },
+                       color_discrete_sequence = px.colors.cyclical.Edge
                        )
 
     c1.plotly_chart(fig2, use_container_width=True)
@@ -150,12 +207,13 @@ def buy_estates(data):
     fig3 = px.line(mean_price_sell_by_zipcode,
                    x = "zipcode",
                    y = "sale_price",
+                   color_discrete_sequence=px.colors.cyclical.Edge
                    )
     c2.plotly_chart(fig3, use_container_width=True)
 
     return None
 
-def business_hypo(data):
+def business_hypo_1(data):
     st.title('Business hypothesis')
     st.header('A. More than 10% of Estates with waterfront are cheaper than average')
     data['zipcode'] = data['zipcode'].astype(str)
@@ -181,7 +239,7 @@ def business_hypo(data):
     #c1.plotly_chart(fig1, use_container_width=True)
 
     ##### SECOND PLOT: Estates with waterfront vs Price Avg
-    fig1 = px.pie(wf, values='waterfront', names='bigger_smaller')
+    fig1 = px.pie(wf, values='waterfront', names='bigger_smaller', color_discrete_sequence = px.colors.cyclical.Edge)
     fig1.update_traces(textposition='inside', textfont_size=15)
     #fig1.update_layout(uniformtext_minsize=14, uniformtext_mode='hide')
     c1.plotly_chart(fig1, use_container_width=True)
@@ -195,11 +253,48 @@ def business_hypo(data):
                        barmode="stack",
                         labels={
                             "bigger_smaller": "Bigger/Smaller than Avg", "zipcode": "Zipcode"
-                        }
+                        },
+                        color_discrete_sequence = px.colors.cyclical.Edge
                        )
     c2.plotly_chart(fig2, use_container_width=True)
 
     return None
+
+def business_hypo_2(data):
+    st.header('A. More than 10% of Estates with waterfront are cheaper than average')
+    data['zipcode'] = data['zipcode'].astype(str)
+    c1, c2 = st.beta_columns(2)
+
+    c1.subheader('Price Avg of Estates with Year Built < 1955')
+    c2.subheader('Estates per region vs Price Avg')
+
+    data_new = Functions.create_price_mean_col(data)  # Merges column price_mean on the current dataset
+
+    data_new['percentual'] = data_new.apply(Functions.percentual_growth, axis=1)
+    data_new['bigger_smaller'] = data_new.apply(Functions.bigger_smaller_than_avg, axis=1)
+    data_new.sort_values('zipcode', inplace=True)  # organizing dataframe by region order so that the plot is organized
+
+    df_yrbuilt = data_new[data_new['yr_built'] < 1955].copy()
+    df_yrbuilt.sort_values('zipcode', inplace=True)
+
+    total_df_yrbuilt = df_yrbuilt[['id', 'bigger_smaller', 'zipcode']].groupby(['zipcode', 'bigger_smaller']).count().reset_index()
+
+    fig1 = px.pie(total_df_yrbuilt, values= 'id', names='bigger_smaller', color_discrete_sequence = px.colors.cyclical.Edge)
+    fig1.update_traces(textposition='inside', textfont_size=15)
+    c1.plotly_chart(fig1, use_container_width=True)
+
+    fig2 = px.histogram(df_yrbuilt,
+                        y='id',
+                        x='zipcode',
+                        color='bigger_smaller',
+                        histfunc='count',
+                        barmode= 'stack',
+                        color_discrete_sequence=px.colors.cyclical.Edge,
+                        labels={
+                            "bigger_smaller": "Bigger/Smaller than Avg", "zipcode": "Zipcode"
+                        }
+                        )
+
 if __name__ == '__main__':
     # ETL
     # ---- Data Extraction
@@ -210,5 +305,6 @@ if __name__ == '__main__':
 
     # ---- Transformation
     data_overview(data)
+    portfolio_density(data,geofile)
     buy_estates(data)
-    business_hypo(data)
+    business_hypo_1(data)
