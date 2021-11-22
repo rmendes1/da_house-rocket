@@ -274,16 +274,23 @@ def business_hypo_2(data):
     df_yrbuilt.sort_values('zipcode', inplace=True)
 
     total_df_yrbuilt = df_yrbuilt[['id', 'bigger_smaller', 'zipcode']].groupby(['zipcode', 'bigger_smaller']).count().reset_index()
+    total_df_condition = df_yrbuilt[['id', 'condition', 'bigger_smaller']].groupby(['bigger_smaller', 'condition']).count().reset_index()
+    total_df_condition = df_yrbuilt[['id', 'bigger_smaller', 'condition']].groupby(
+        ['condition', 'bigger_smaller']).count()
 
+    total_df_condition['percentual'] = total_df_condition.groupby(level=[0, 0]).apply(lambda g: (g / (g.sum()) * 100))
+    total_df_condition.reset_index(inplace=True)
+    total_df_condition['percentual'] = total_df_condition['percentual'].transform(lambda x: '%.2f' % x).transform(
+                                                                                                        lambda x: f'{x}%')
     st.subheader('Condition of Estates with Year Built < 1955')
-    fig1 = px.histogram(df_yrbuilt,
-                        x='bigger_smaller',
-                        y='id',
-                        color='condition',
-                        histfunc='count',
-                        barmode='group',
-                        color_discrete_sequence=px.colors.cyclical.Edge
-                        )
+
+    fig1 = px.bar(total_df_condition,
+                  x = 'condition',
+                  y = 'id',
+                  color = 'bigger_smaller',
+                  text = 'percentual',
+                  color_discrete_sequence=px.colors.cyclical.Edge
+                  )
 
     st.plotly_chart(fig1, use_container_width=True)
 
@@ -299,6 +306,10 @@ def business_hypo_2(data):
     fig2 = px.pie(total_df_yrbuilt, values= 'id', names='bigger_smaller', color_discrete_sequence = px.colors.cyclical.Edge)
     fig2.update_traces(textposition='inside', textfont_size=15)
     c1.plotly_chart(fig2, use_container_width=True)
+
+
+
+
 
     fig3 = px.histogram(df_yrbuilt,
                         y='id',
