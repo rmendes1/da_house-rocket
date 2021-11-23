@@ -43,27 +43,6 @@ def percentual_growth(row):  # Calculates the percentual difference in relation 
     return percentual
 
 
-def percentage_index(plot, feature):  # Sets an indication of percentage in barplots
-    total = feature.sum()
-    for p in plot.patches:
-        percentage = str(((p.get_height() / total) * 100).round(1)) + '%'
-        width = p.get_width()
-        height = p.get_height()
-        x, y = p.get_xy()
-        plot.annotate(f'{percentage}', (x + width / 2, y + height),
-                      ha='center', fontsize=25)
-    return None
-
-def quantity_index(plot, feature):  # Sets an indication of quantity in barplots
-    total = feature.sum()
-    for p in plot.patches:
-        width = p.get_width()
-        height = p.get_height()
-        x, y = p.get_xy()
-        plot.annotate(f'{height}', (x + width / 2, y + height),
-                      ha='center', fontsize=25)
-    return None
-
 def bigger_smaller_than_avg(
         row):  # Calculates if a given estate has a bigger or smaller price in relation to the mean value
     if row.price > row.price_mean:
