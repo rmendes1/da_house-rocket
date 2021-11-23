@@ -301,15 +301,9 @@ def business_hypo_2(data):
 
 
 
-
-
     fig2 = px.pie(total_df_yrbuilt, values= 'id', names='bigger_smaller', color_discrete_sequence = px.colors.cyclical.Edge)
     fig2.update_traces(textposition='inside', textfont_size=15)
     c1.plotly_chart(fig2, use_container_width=True)
-
-
-
-
 
     fig3 = px.histogram(df_yrbuilt,
                         y='id',
@@ -328,8 +322,49 @@ def business_hypo_2(data):
     return None
 
 
-def busininess_hypo_3(data):
-    
+def business_hypo_3(data):
+    st.header('C. Estates with basement have total area (sqrt_lot) 40% bigger than estates without basement.')
+
+    data['date'] = pd.to_datetime(data['date']).dt.strftime('%Y-%m-%d')
+    data['zipcode'] = data['zipcode'].astype(str)
+    data.sort_values('zipcode', inplace=True)
+
+    no_basement = data.loc[data['sqft_basement'] == 0] #dataframe with estates without basement
+    no_basement = no_basement[['sqft_lot', 'zipcode']].groupby('zipcode').mean().reset_index()
+
+    with_basement = data.loc[data['sqft_basement'] > 0] #dataframe with estates with basement
+    with_basement = with_basement[['sqft_lot', 'zipcode']].groupby('zipcode').mean().reset_index()
+
+    data = pd.merge(data, no_basement, on='zipcode', how='inner') #merging dataframe with estates without basement and original dataframe
+    data.rename(columns={"sqft_lot_x": "sqft_lot", "sqft_lot_y": "no_basement_sqft_lot"}, inplace=True)
+
+    basement = pd.merge(data, with_basement, on='zipcode', how='inner') #merges original dataframe with dataframe containing estates with basement
+    basement.rename(columns={"sqft_lot_x": "sqft_lot", "sqft_lot_y": "with_basement_sqft_lot"}, inplace=True)
+
+    basement['no_basement_size_avg'] = basement.apply(Functions.basement_size_col, percentage=40, axis=1)
+    basement_plot = basement[['id', 'no_basement_size_avg']].groupby('no_basement_size_avg').count().reset_index() #preparing data for plot
+
+    c1, c2 = st.beta_columns(2)
+
+
+    # FIRST PLOT: PIE CHART
+    c1.subheader('Basement area relation')
+    fig1 = px.pie(basement_plot, values='id', names='no_basement_size_avg',
+                  color_discrete_sequence=px.colors.cyclical.Edge)
+    fig1.update_traces(textposition='inside', textfont_size=15)
+    c1.plotly_chart(fig1, use_container_width=True)
+
+
+    #SECOND PLOT: BAR CHART
+    c2.subheader('Estates per region vs Basement area')
+    fig2 = px.histogram(basement,
+                        x='zipcode',
+                        y='id',
+                        color='no_basement_size_avg',
+                        histfunc='count',
+                        barmode='stack',
+                        color_discrete_sequence=px.colors.cyclical.Edge)
+    c2.plotly_chart(fig2, use_container_width=True)
 
     return None
 
@@ -347,3 +382,4 @@ if __name__ == '__main__':
     buy_estates(data)
     business_hypo_1(data)
     business_hypo_2(data)
+    business_hypo_3(data)
