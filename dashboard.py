@@ -327,6 +327,12 @@ def business_hypo_2(data):
 
     return None
 
+
+def busininess_hypo_3(data):
+    
+
+    return None
+
 if __name__ == '__main__':
     # ETL
     # ---- Data Extraction
