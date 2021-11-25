@@ -31,6 +31,9 @@ def get_geofile(path): #change to url
 
 def data_overview(data):
     st.title('House Rocket Exploratory Data Analysis')
+
+    st.sidebar.title("Modify the table to your preferences:")
+    st.sidebar.markdown('Select the columns and/or area of interest:')
     f_attributes = st.sidebar.multiselect('Enter columns', data.columns)
     f_zipcode = st.sidebar.multiselect('Enter zipcode', sorted(set(data['zipcode'].unique())))
     st.title('Data Overview')
@@ -356,7 +359,7 @@ def business_hypo_3(data):
 
 
     #SECOND PLOT: BAR CHART
-    c2.subheader('Estates per region vs Basement area')
+    c2.subheader('Basement size area per region')
     fig2 = px.histogram(basement,
                         x='zipcode',
                         y='id',
@@ -367,6 +370,8 @@ def business_hypo_3(data):
     c2.plotly_chart(fig2, use_container_width=True)
 
     return None
+
+
 
 if __name__ == '__main__':
     # ETL
