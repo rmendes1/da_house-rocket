@@ -339,6 +339,44 @@ def business_hypo_3(data):
 
     return None
 
+def business_hypo_4(data):
+    st.header('D. The estates growth price YoY (Year over Year) in 2015 is 10% in most regions')
+    data['zipcode'] = data['zipcode'].astype(str)
+    data['date'] = pd.to_datetime(data['date']).dt.strftime('%Y-%m-%d')
+    data.sort_values('date', inplace=True)
+    year_summary = data[['id', 'zipcode', 'date', 'price']].copy()
+    year_summary['year'] = pd.to_datetime(year_summary['date']).dt.strftime('%Y')
+    year_summary = year_summary[['zipcode', 'price', 'year']].groupby(['zipcode', 'year']).mean().reset_index()
+
+    # LOOP TO CALCULATE THE PRICE DIFFERENCE BETWEEN YEARS
+    for i in range(len(year_summary)):
+        if year_summary.loc[i, 'year'] == '2015':
+            year_summary.loc[i, 'difference'] = year_summary.loc[i, 'price'] - year_summary.loc[i - 1, 'price']
+
+    else:
+        year_summary.loc[i, 'difference'] = 'NaN'  #because there are no years before 2014
+
+    # LOOP TO CALCULATE THE PERCENTAGE VALUE
+    for i in range(len(year_summary)):
+        if year_summary.loc[i, 'year'] == '2015':
+            year_summary.loc[i, 'YoY_percentage_diff (%)'] = (year_summary.loc[i, 'difference'] / year_summary.loc[
+                i, 'price']) * 100
+
+        else:
+            year_summary.loc[i, 'YoY_percentage_diff (%)'] = 'NaN'
+
+    year_summary_1 = year_summary[year_summary['year'] == '2015'].copy()
+    year_summary_1.drop('year', axis=1, inplace=True)
+
+    fig1 = px.line(year_summary_1,
+                   x='zipcode',
+                   y='YoY_percentage_diff (%)',
+                   color_discrete_sequence=px.colors.cyclical.Edge
+                   )
+
+    st.plotly_chart(fig1, use_container_width=True)
+
+    return None
 
 
 if __name__ == '__main__':
@@ -355,3 +393,4 @@ if __name__ == '__main__':
     business_hypo_1(data)
     business_hypo_2(data)
     business_hypo_3(data)
+    business_hypo_4(data)
