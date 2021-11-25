@@ -8,7 +8,6 @@ Created on Nov 10th, 2021.
 
 ###---IMPORTS---###
 import pandas as pd   #to handle csv files and DataFrame structures
-import numpy as np
 import folium         #to handle the map with price density
 from streamlit_folium import folium_static
 from folium.plugins import MarkerCluster
@@ -29,14 +28,14 @@ def get_geofile(path): #change to url
    geofile = geopandas.read_file(path)
    return geofile
 
-def data_overview(data):
+def data_overview_map(data, geofile):
     st.title('House Rocket Exploratory Data Analysis')
-
+    c1, c2 = st.beta_columns(2)
     st.sidebar.title("Modify the table to your preferences:")
     st.sidebar.markdown('Select the columns and/or area of interest:')
     f_attributes = st.sidebar.multiselect('Enter columns', data.columns)
     f_zipcode = st.sidebar.multiselect('Enter zipcode', sorted(set(data['zipcode'].unique())))
-    st.title('Data Overview')
+    c1.header('Data Overview')
     # attributes + zipcode = Select columns and rows
     # atributes = select colunmns
     # zipcode = select lines
@@ -54,14 +53,9 @@ def data_overview(data):
     else:
         data = data.copy()
 
-    st.dataframe(data)
+    c1.dataframe(data, height = 520)
 
-    return None
-
-def portfolio_density(data, geofile):
-    st.title('Region Overview')
-    c1, c2 = st.beta_columns(2)
-    c1.header('Portfolio Density')
+    c2.header('Portfolio Density')
 
     df = data.sample(10)
 
@@ -79,37 +73,11 @@ def portfolio_density(data, geofile):
         folium.Marker(([row['lat'], row['long']]),
                       popup='Price {0}, Sold on: {1}, with sqft: {2} m2'.format(row['price'],
                                                                                 row['date'],
-                                                                                row['sqft_living'])).add_to(marker_cluster)
-
-    with c1:
-        folium_static(density_map)
-
-    # -------
-    # Region Price Map
-    # -------
-
-    c2.header("Price Density")
-
-    df = data[['price', 'zipcode']].groupby('zipcode').mean().reset_index()
-
-    df.columns = ['ZIP', 'PRICE']
-    df.sample(10)
-    geofile = geofile[geofile['ZIP'].isin(df['ZIP'].tolist())]
-
-    region_price_map = folium.Map(location=[data['lat'].mean(), data['long'].mean()],
-                                  default_zoom_start=15)
-
-    region_price_map.choropleth(data=df,
-                                geo_data=geofile,
-                                columns=['ZIP', 'PRICE'],
-                                key_on='feature.properties.ZIP',
-                                fill_color='YlOrRd',
-                                fill_opacity=0.7,
-                                line_opacity=0.2,
-                                legend_name='AVG PRICE')
+                                                                                row['sqft_living']), max_width = 700).add_to(
+            marker_cluster)
 
     with c2:
-        folium_static(region_price_map)
+        folium_static(density_map)
 
     return None
 
@@ -382,8 +350,7 @@ if __name__ == '__main__':
     geofile = get_geofile(url)
 
     # ---- Transformation
-    data_overview(data)
-    #portfolio_density(data,geofile)
+    data_overview_map(data, geofile)
     buy_estates(data)
     business_hypo_1(data)
     business_hypo_2(data)
