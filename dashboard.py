@@ -13,7 +13,6 @@ from streamlit_folium import folium_static
 from folium.plugins import MarkerCluster
 import geopandas
 import plotly.express as px #to plot graphic results of the metrics
-#import seaborn as sns     #to plot graphic results of the metrics given
 import streamlit as st  #to create the dashboard page
 import Functions  #functions created to modularize the code
 pd.set_option('display.float_format', lambda x: '%.2f' % x)  #limits the quantity of float numbers (decimal)
