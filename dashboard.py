@@ -341,12 +341,16 @@ def business_hypo_3(data):
 
 def business_hypo_4(data):
     st.header('D. The estates growth price YoY (Year over Year) in 2015 is 10% in most regions')
+    st.subheader('YoY variation from 2014 to 2015 in all regions')
     data['zipcode'] = data['zipcode'].astype(str)
     data['date'] = pd.to_datetime(data['date']).dt.strftime('%Y-%m-%d')
     data.sort_values('date', inplace=True)
     year_summary = data[['id', 'zipcode', 'date', 'price']].copy()
     year_summary['year'] = pd.to_datetime(year_summary['date']).dt.strftime('%Y')
     year_summary = year_summary[['zipcode', 'price', 'year']].groupby(['zipcode', 'year']).mean().reset_index()
+
+
+    year_summary['price'] = year_summary['price'].astype('float')
 
     # LOOP TO CALCULATE THE PRICE DIFFERENCE BETWEEN YEARS
     for i in range(len(year_summary)):
@@ -356,18 +360,14 @@ def business_hypo_4(data):
     else:
         year_summary.loc[i, 'difference'] = 'NaN'  #because there are no years before 2014
 
-    # LOOP TO CALCULATE THE PERCENTAGE VALUE
-    for i in range(len(year_summary)):
-        if year_summary.loc[i, 'year'] == '2015':
-            year_summary.loc[i, 'YoY_percentage_diff (%)'] = (year_summary.loc[i, 'difference'] / year_summary.loc[
-                i, 'price']) * 100
-
-        else:
-            year_summary.loc[i, 'YoY_percentage_diff (%)'] = 'NaN'
+    # it is necessary to perform this data type transformation, otherwise the division below will not occur
+    year_summary['difference'] = year_summary['difference'].astype(float)
 
     year_summary_1 = year_summary[year_summary['year'] == '2015'].copy()
     year_summary_1.drop('year', axis=1, inplace=True)
+    year_summary_1['YoY_percentage_diff (%)'] = (year_summary_1['difference']) / (year_summary_1['price']) * 100
 
+    # PLOT SETTINGS
     fig1 = px.line(year_summary_1,
                    x='zipcode',
                    y='YoY_percentage_diff (%)',
@@ -378,6 +378,28 @@ def business_hypo_4(data):
 
     return None
 
+def business_hypo_data_5(data):
+    st.header('E. The estates price growth MoM (Month over MonthO between 2014-2015 is 20%')
+    st.subheader('Estates MoM variation from 2014 to 2015')
+    st.subheader('Estates MoM variation from 2014 to 2015')
+    data['date'] = pd.to_datetime(data['date']).dt.strftime('%Y-%m-%d')
+    data['zipcode'] = data['zipcode'].astype(str)
+    data.sort_values('date', inplace=True)
+
+    monthly = data[['id', 'date', 'price']].copy()
+
+    monthly['year_month'] = pd.to_datetime(monthly['date']).dt.strftime('%Y-%m')
+    monthly = monthly[['price', 'year_month']].groupby('year_month').mean().reset_index()
+    monthly['difference'] = monthly['price'].diff(1)
+    monthly['MoM_diff (%)'] = (monthly['difference'] / monthly['price']) * 100
+
+    fig1 = px.line(monthly,
+                  x='year_month',
+                  y='MoM_diff (%)',
+                  color_discrete_sequence=px.colors.cyclical.Edge
+                  )
+
+    st.plotly_chart(fig1, use_container_width=True)
 
 if __name__ == '__main__':
     # ETL
@@ -394,3 +416,4 @@ if __name__ == '__main__':
     business_hypo_2(data)
     business_hypo_3(data)
     business_hypo_4(data)
+    business_hypo_data_5(data)
