@@ -381,7 +381,6 @@ def business_hypo_4(data):
 def business_hypo_data_5(data):
     st.header('E. The estates price growth MoM (Month over MonthO between 2014-2015 is 20%')
     st.subheader('Estates MoM variation from 2014 to 2015')
-    st.subheader('Estates MoM variation from 2014 to 2015')
     data['date'] = pd.to_datetime(data['date']).dt.strftime('%Y-%m-%d')
     data['zipcode'] = data['zipcode'].astype(str)
     data.sort_values('date', inplace=True)
