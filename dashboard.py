@@ -8,10 +8,9 @@ Created on Nov 10th, 2021.
 
 ###---IMPORTS---###
 import pandas as pd   #to handle csv files and DataFrame structures
-import folium         #to handle the map with price density
+import folium         #to handle the price density map
 from streamlit_folium import folium_static
 from folium.plugins import MarkerCluster
-import geopandas
 import plotly.express as px #to plot graphic results of the metrics
 import streamlit as st  #to create the dashboard page
 import Functions  #functions created to modularize the code
@@ -23,11 +22,7 @@ def get_data(path):
     data = pd.read_csv(path) #loads the archive
     return data
 
-def get_geofile(path): #change to url
-   geofile = geopandas.read_file(path)
-   return geofile
-
-def data_overview_map(data, geofile):
+def data_overview_map(data):
     st.title('House Rocket Exploratory Data Analysis')
     c1, c2 = st.beta_columns(2)
     st.sidebar.title("Modify the table to your preferences:")
@@ -79,6 +74,7 @@ def data_overview_map(data, geofile):
         folium_static(density_map)
 
     return None
+
 
 
 ### What are the estates that House Rocket should buy and for how much? ###
@@ -403,12 +399,10 @@ if __name__ == '__main__':
     # ETL
     # ---- Data Extraction
     path = 'kc_house_data.csv'
-    url = 'Zip_Codes.geojson'
     data = get_data(path)
-    geofile = get_geofile(url)
 
     # ---- Transformation
-    data_overview_map(data, geofile)
+    data_overview_map(data)
     buy_estates(data)
     business_hypo_1(data)
     business_hypo_2(data)

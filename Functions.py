@@ -1,3 +1,10 @@
+"""" This module was created to hold auxiliar functions to House Rocket project dashboard.
+
+Author: Joao Renato Freitas Mendes <joaorenatomendes@gmail.com>
+
+Created on Nov 10th, 2021.
+"""
+
 import pandas as pd
 
 def buy_estate(row):
