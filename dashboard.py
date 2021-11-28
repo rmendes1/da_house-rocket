@@ -108,18 +108,7 @@ def buy_estates(data):
         histfunc="count",
         barmode = "group",
         color_discrete_sequence = px.colors.sequential.Viridis
-        #title = 'Number of houses to buy'
-
         )
-    #fig.update_layout(font_family = "Times New Roman",
-                      #font_color = "black",
-    #                  title_font_family = "Times New Roman",
-     #                 legend_title_font_color = "black"
-      #
-       #               )
-
-
-    #fig.update_xaxes(title_font_family = "Arial")
 
     st.plotly_chart(fig, use_container_width=True)  #creates a minor plot with a description of how many estates HR should buy
 
@@ -194,15 +183,6 @@ def business_hypo_1(data):
 
     wf = data_new[data_new['waterfront'] == 1]
     wf = wf[['waterfront', 'bigger_smaller', 'zipcode']]
-
-    #total_waterfront = wf.groupby(['zipcode','bigger_smaller']).count().reset_index()                    #IT TURNS OUT THAT IT WAS NOT LONGER NEEDED
-    #total_estate = data_new[['id', 'bigger_smaller']].groupby('bigger_smaller').count().reset_index()
-
-    ##### FIRST PLOT: Estates vs Price Avg
-   # fig1 = px.pie(total_estate, values='id', names='bigger_smaller')
-   # fig1.update_traces(textposition='inside')
-    #fig1.update_layout(uniformtext_minsize=12, uniformtext_mode='hide')
-    #c1.plotly_chart(fig1, use_container_width=True)
 
     ##### SECOND PLOT: Estates with waterfront vs Price Avg
     fig1 = px.pie(wf, values='waterfront', names='bigger_smaller', color_discrete_sequence = px.colors.cyclical.Edge)
