@@ -78,7 +78,6 @@ def data_overview_map(data):
 
 
 ### What are the estates that House Rocket should buy and for how much? ###
-### COLOCAR MAPA DE DENSIDADE EM CIMA OU EMBAIXO
 def buy_estates(data):
 
     st.header('1. How many estates should House Rocket buy?')
@@ -96,9 +95,7 @@ def buy_estates(data):
 
     buy_estate_result['buy_estate']=buy_estate_result.apply(Functions.buy_estate, axis = 1) #for more details, check Functions archive
     buy_estate_result.sort_values('condition', inplace = True)
-    #c1.dataframe(buy_estate_result.head(15))
 
-    #c1.header('Quantity of estates to buy')
     st.header('Quantity of estates to buy')
     fig = px.histogram(
         data_frame=buy_estate_result,
@@ -107,6 +104,9 @@ def buy_estates(data):
         color = "condition",
         histfunc="count",
         barmode = "group",
+        labels={
+             "buy_estate": "Estates to be bought", "condition": "Condition"
+        },
         color_discrete_sequence = px.colors.sequential.Viridis
         )
 
@@ -162,6 +162,9 @@ def buy_estates(data):
     fig3 = px.line(mean_price_sell_by_zipcode,
                    x = "zipcode",
                    y = "sale_price",
+                   labels={
+                    "zipcode": "Zipcode"
+                   },
                    color_discrete_sequence=px.colors.cyclical.Edge
                    )
     c2.plotly_chart(fig3, use_container_width=True)
@@ -235,6 +238,9 @@ def business_hypo_2(data):
                   y = 'id',
                   color = 'bigger_smaller',
                   text = 'percentual',
+                  labels={
+                      "bigger_smaller": "Bigger/Smaller than Avg"
+                  },
                   color_discrete_sequence=px.colors.cyclical.Edge
                   )
 
@@ -307,6 +313,9 @@ def business_hypo_3(data):
                         x='zipcode',
                         y='id',
                         color='no_basement_size_avg',
+                        labels={
+                            "no_basement_size_avg": "Without basement estates size avg", "zipcode": "Zipcode"
+                        },
                         histfunc='count',
                         barmode='stack',
                         color_discrete_sequence=px.colors.cyclical.Edge)
@@ -346,6 +355,9 @@ def business_hypo_4(data):
     fig1 = px.line(year_summary_1,
                    x='zipcode',
                    y='YoY_percentage_diff (%)',
+                   labels={
+                       "YoY_percentage_diff (%)": "YoY difference (%)", "zipcode": "Zipcode"
+                   },
                    color_discrete_sequence=px.colors.cyclical.Edge
                    )
 
@@ -370,6 +382,9 @@ def business_hypo_data_5(data):
     fig1 = px.line(monthly,
                   x='year_month',
                   y='MoM_diff (%)',
+                  labels={
+                       "MoM_diff (%)": "MoM difference (%)", "year_month": "Year month"
+                   },
                   color_discrete_sequence=px.colors.cyclical.Edge
                   )
 
