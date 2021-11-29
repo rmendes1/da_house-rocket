@@ -19,12 +19,27 @@
   <img alt="License" src="https://img.shields.io/badge/license-MIT-brightgreen">
 </p>
 
+# Table of Contents
+<p align="center">
+  <a href="#description">Description</a> •
+  <a href="#dataset">Dataset</a> •
+  <a href="#tools">Tools</a> •
+  <a href="#steps">Steps</a> •  
+  <a href="#business-hypotheses">Business Hypotheses</a> •
+  <a href="#conclusion">Conclusion</a>
+</p>
 
-## 💻 About
-https://share.streamlit.io/rmendes1/house-rocket/main/dashboard.py
 
-[ADD Amazon AWS icon here]
-### 1. Description
+## **Description**
+
+
+
+<a href="https://share.streamlit.io/rmendes1/house-rocket/main/dashboard.py">
+  <img alt="Made by rmendes1" src="https://img.shields.io/badge/Acess%20Dashboard%20-Streamlit-%2304D361">
+</a>
+
+
+
 House Rocket is a fictional company that works with Real Estates purchase and sale. The best business opportunities must be found and the strategy is to buy estates in great condition at low prices and sell those properties with higher price. The estates attributes make them more or less appealing depending on their characteristics. Thus, the attractiveness of the properties may be influenced by their attributes, and therefore, their price can vary. 
 
 
@@ -33,7 +48,7 @@ With that in mind, some questions must be answered:
 1. What are the properties that the company should buy and for what price?
 2. What is the best time to sell the property and the best sales price?
 
-### 2. Dataset
+## **Dataset**
 - The dataset for this project can be found at Kaggle: https://www.kaggle.com/harlfoxem/housesalesprediction/discussion/207885 
 - This dataset contains house sale prices for King County, which includes Seattle. It includes houses sold between May 2014 and May 2015.
 
@@ -61,10 +76,27 @@ With that in mind, some questions must be answered:
 | sqft_living15  | The square footage of interior housing living space for the nearest 15 neighbors                                                                                                                     |
 | sqft_lot15     | The square footage of the land lots of the nearest 15 neighbors                                                                                                                                      |
 
-### 3. Tools
+## Tools
 <p align="left">
 	  <img height="40" width="40" title="Python" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/python.svg" />
 	  <img height="40" width="40" title="Jupyter" src="https://unpkg.com/simple-icons@6.0.0/icons/jupyter.svg" />
 	  <img height="40" width="40" title="Pycharm" src="https://unpkg.com/simple-icons@6.0.0/icons/pycharm.svg" />
 	  <img height="40" width="40"  title="Streamlit" src="https://unpkg.com/simple-icons@5.24.0/icons/streamlit.svg" />
 </p>
+
+
+## Steps
+
+- Data collection via Kaggle
+- Business understanding
+- Feature Engineering
+- Transformation of variables
+- Data cleaning
+- Data exploration
+- Project Deploy on Streamlit Cloud
+
+## Business Hypotheses
+to be done
+
+## Conclusion
+to be done
