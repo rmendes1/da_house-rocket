@@ -99,11 +99,16 @@ With that in mind, some questions must be answered:
 
 |     | hypotheses                                                                     | Result | Business                                                             |
 |-----|--------------------------------------------------------------------------------|--------|----------------------------------------------------------------------|
-| h1  | More than 10% of Estates with waterfront are cheaper than average              | False  | Only ~6% of Estates with waterfront are cheaper than average.        |
+| h1  | More than 10% of Estates with waterfront are cheaper than average              | False  | Only ~6% of Estates with waterfront are cheaper than average.         |
 | h2  | More than 60% of Estates with year built before 1955 are cheaper than average  | True   | Investing only on estates with condition >=3                         |
-| h3  | Estates with basement have total area 40% bigger than estates without basement | True   | Investing in properties without a basement                           |
-| h4  | The estates growth price YoY (Year over Year) in 2015 is 10% in most regions   | True   | Investing in unrenovated properties and renovating them for sale     |
-| h5  | The estates price growth MoM (Month over MonthO between 2014-2015 is 20%       | False  | Do not invest in bad condition                                       |
+| h3  | Estates with basement have total area 40% bigger than estates without basement | False  | Investing in properties regardless of basement existence             |
+| h4  | The estates growth price YoY (Year over Year) in 2015 is 10% in most regions   | True   | Investing in properties in the lower cost months     |
+| h5  | The estates price growth MoM (Month over Month) between 2014-2015 is 20%       | False  | Investing in properties in the lower cost months                     |
 
 # Conclusion
-to be done
+- Appealing properties for purchase have been grouped by location and season of the year. 
+- Lots of good properties with year built below 1955 are available for 
+purchase. 
+- Although not a big number, some houses with waterfront are still viable to invest.
+-  There are some vital months with good YoY/MoM variation that should have the necessary attention. 
+-  The best time to sell properties is in Spring, as the price is higher at that time.
