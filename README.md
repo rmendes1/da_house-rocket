@@ -78,10 +78,10 @@ With that in mind, some questions must be answered:
 
 # Tools
 <p align="left">
-	  <img height="40" width="40" title="Python" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/python.svg" />
-	  <img height="40" width="40" title="Jupyter" src="https://unpkg.com/simple-icons@6.0.0/icons/jupyter.svg" />
-	  <img height="40" width="40" title="Pycharm" src="https://unpkg.com/simple-icons@6.0.0/icons/pycharm.svg" />
-	  <img height="40" width="40"  title="Streamlit" src="https://unpkg.com/simple-icons@5.24.0/icons/streamlit.svg" />
+<a href="https://www.python.org/"> <img alt="Website img height="40" width="40" title="Python" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/python.svg" /> </a>
+<a href="https://jupyter.org/">  <img height="40" width="40" title="Jupyter" src="https://unpkg.com/simple-icons@6.0.0/icons/jupyter.svg" /> </a>
+<a href="https://www.jetbrains.com/pycharm/">	 <img height="40" width="40" title="Pycharm" src="https://unpkg.com/simple-icons@6.0.0/icons/pycharm.svg" /> </a>
+<a href="https://streamlit.io/">   <img height="40" width="40"  title="Streamlit" src="https://unpkg.com/simple-icons@5.24.0/icons/streamlit.svg" /> </a>
 </p>
 
 
@@ -112,3 +112,10 @@ purchase.
 - Although not a big number, some houses with waterfront are still viable to invest.
 -  There are some vital months with good YoY/MoM variation that should have the necessary attention. 
 -  The best time to sell properties is in Spring, as the price is higher at that time.
+
+# License
+
+This project is under MIT License.
+
+Done with ❤️ by João Renato Mendes 👋🏽 [Get in touch!](https://www.linkedin.com/in/joaorenatomendes/)
+
