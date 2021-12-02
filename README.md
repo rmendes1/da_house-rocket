@@ -27,6 +27,8 @@
   <a href="#steps">Steps</a> •  
   <a href="#business-hypotheses">Business Hypotheses</a> •
   <a href="#conclusion">Conclusion</a>
+  <a href="#next-steps">Next Steps</a>
+  <a href="#license">License</a>
 </p>
 
 
@@ -112,7 +114,12 @@ purchase.
 - Although not a big number, some houses with waterfront are still viable to invest.
 -  There are some vital months with good YoY/MoM variation that should have the necessary attention. 
 -  The best time to sell properties is in Spring, as the price is higher at that time.
-
+	
+	
+# Next steps
+- Color adjustment for streamlit dark mode
+- ML Algorithm implementation
+	
 # License
 
 This project is under MIT License.
