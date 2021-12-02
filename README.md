@@ -26,8 +26,8 @@
   <a href="#tools">Tools</a> •
   <a href="#steps">Steps</a> •  
   <a href="#business-hypotheses">Business Hypotheses</a> •
-  <a href="#conclusion">Conclusion</a>
-  <a href="#next-steps">Next Steps</a>
+  <a href="#conclusion">Conclusion</a> •
+  <a href="#next-steps">Next Steps</a> •
   <a href="#license">License</a>
 </p>
 
