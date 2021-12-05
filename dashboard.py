@@ -51,7 +51,7 @@ def data_overview_map(data):
 
     c2.header('Portfolio Density')
 
-    df = data.sample(10)
+    df = data.sample(4000)
 
     # -----------
     # MAP CONSTRUCTION - folium
