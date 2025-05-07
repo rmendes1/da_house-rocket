@@ -79,12 +79,11 @@ With that in mind, some questions must be answered:
 | sqft_lot15     | The square footage of the land lots of the nearest 15 neighbors                                                                                                                                      |
 
 # Tools
-<p align="left">
-<a href="https://www.python.org/"> <img alt="Website img height="40" width="40" title="Python" src="https://cdn.jsdelivr.net/npm/simple-icons@v5/icons/python.svg" /> </a>
-<a href="https://jupyter.org/">  <img height="40" width="40" title="Jupyter" src="https://unpkg.com/simple-icons@6.0.0/icons/jupyter.svg" /> </a>
-<a href="https://www.jetbrains.com/pycharm/">	 <img height="40" width="40" title="Pycharm" src="https://unpkg.com/simple-icons@6.0.0/icons/pycharm.svg" /> </a>
-<a href="https://streamlit.io/">   <img height="40" width="40"  title="Streamlit" src="https://unpkg.com/simple-icons@5.24.0/icons/streamlit.svg" /> </a>
-</p>
+<div align="center">
+<img src="https://img.shields.io/badge/python%20-%2314354C.svg?&style=for-the-badge&logo=python&logoColor=white" /> 
+<img src="https://img.shields.io/badge/Jupyter-808080?style=for-the-badge&logo=Jupyter&logoColor=orange" />
+<img src="https://img.shields.io/badge/Streamlit-FFFFFF?style=for-the-badge&logo=Streamlit&logoColor=orange" />
+</div>
 
 
 # Steps
